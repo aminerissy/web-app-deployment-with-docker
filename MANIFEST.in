@@ -1,0 +1,5 @@
+include build.sh Jenkinsfile MANIFEST.in run.py setup.py requirements.txt
+include yourapp/templates/* yourapp/forms/* yourapp/static/* yourapp/util/*
+exclude yourapp/tests/__init__.py
+exclude yourapp/tests/test_views.py
+exclude web_app.egg-info/*

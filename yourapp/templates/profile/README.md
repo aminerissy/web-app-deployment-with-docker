@@ -1,0 +1,1 @@
+# for each route you will have a folder of html files related to it we called it blueprint
