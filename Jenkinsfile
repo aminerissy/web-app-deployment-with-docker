@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Running build automation'
-                sh 'sudo usermod -aG sudo jenkins && ./build.sh'
+                sh 'sh build.sh'
             }
         }
 
