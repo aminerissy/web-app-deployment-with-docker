@@ -18,7 +18,7 @@ pipeline {
         // packaging the image in a docker image
         stage('Build Docker Image') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 script {
@@ -32,7 +32,7 @@ pipeline {
         // push it to cocker hub
         stage('Push Docker Image') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 script {
@@ -46,7 +46,7 @@ pipeline {
         // pull the image and run an instance of it
         stage('DeployToProduction') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 input 'Deploy to Production?'
