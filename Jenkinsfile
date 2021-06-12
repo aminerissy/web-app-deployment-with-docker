@@ -5,8 +5,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Running build automation'
-                sh './gradlew build --no-daemon'
-                archiveArtifacts artifacts: 'dist/trainSchedule.zip'
+                sh 'sh ./build.sh'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing the app'
+                sh sh 'source ./env/bin/activate && pytest -v ./yourapp/tests/test_views.py'
             }
         }
         // packaging the image in a docker image
@@ -16,7 +22,7 @@ pipeline {
             }
             steps {
                 script {
-                    app = docker.build("devopsstrg/train-schedule")
+                    app = docker.build("devopsstrg/flask-web-app")
                     app.inside {
                         sh 'echo $(curl localhost:8080)'
                     }
@@ -47,14 +53,14 @@ pipeline {
                 milestone(1)
                 withCredentials([usernamePassword(credentialsId: 'production_server_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull devopsstrg/train-schedule:${env.BUILD_NUMBER}\""
+                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull devopsstrg/flask-web-app:${env.BUILD_NUMBER}\""
                         try {
-                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker stop train-schedule\""
-                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker rm train-schedule\""
+                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker stop flask-web-app\""
+                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker rm flask-web-app\""
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker run --restart always --name train-schedule -p 8080:8080 -d devopsstrg/train-schedule:${env.BUILD_NUMBER}\""
+                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker run --restart always --name flask-web-app -p 8080:8080 -d devopsstrg/flask-web-app:${env.BUILD_NUMBER}\""
                     }
                 }
             }
