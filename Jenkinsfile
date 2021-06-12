@@ -5,14 +5,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Running build automation'
-                sh 'sh ./build.sh'
+                sh './build.sh'
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Testing the app'
-                sh sh 'source ./env/bin/activate && pytest -v ./yourapp/tests/test_views.py'
+                sh 'source ./env/bin/activate && pytest -v ./yourapp/tests/test_views.py'
             }
         }
         // packaging the image in a docker image
